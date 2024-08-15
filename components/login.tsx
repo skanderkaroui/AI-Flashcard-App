@@ -33,7 +33,7 @@ export function Login() {
                 <Label htmlFor="password">Password</Label>
                 <Link
                   href="/forgot-password"
-                  className="ml-auto inline-block text-sm underline"
+                  className="ml-auto inline-block text-sm underline text-primary hover:text-primary/90"
                 >
                   Forgot your password?
                 </Link>
@@ -49,7 +49,7 @@ export function Login() {
           </div>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="#" className="underline">
+            <Link href="#" className="underline text-primary hover:text-primary/90">
               Sign up
             </Link>
           </div>

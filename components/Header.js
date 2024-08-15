@@ -1,31 +1,38 @@
 import Link from "next/link";
+import { ModeToggle } from "@/components/ModeToggle";
 
 export default function Header() {
-return (
-    <header className="bg-white shadow-md">
-        <nav className="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div className="text-2xl font-bold text-blue-600">TriviaCards</div>
-            <ul className="flex space-x-4">
-                <li>
-                    <Link
-                        href="#features"
-                        className="text-gray-700 hover:text-blue-600"
-                    >
-                        Features
-                    </Link>
-                </li>
-                <li>
-                    <Link href="#pricing" className="text-gray-700 hover:text-blue-600">
-                        Pricing
-                    </Link>
-                </li>
-                <li>
-                    <Link href="" className="text-gray-700 hover:text-blue-600">
-                        Login
-                    </Link>
-                </li>
-            </ul>
-        </nav>
+  return (
+    <header className="bg-background shadow-md">
+      <nav className="container mx-auto px-6 py-3 flex justify-between items-center">
+        <div className="text-2xl font-bold text-primary">TriviaCards</div>
+        <div className="flex items-center space-x-4">
+          <ul className="flex space-x-4">
+            <li>
+              <Link
+                href="#features"
+                className="text-foreground hover:text-primary"
+              >
+                Features
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="#pricing"
+                className="text-foreground hover:text-primary"
+              >
+                Pricing
+              </Link>
+            </li>
+            <li>
+              <Link href="" className="text-foreground hover:text-primary">
+                Login
+              </Link>
+            </li>
+          </ul>
+          <ModeToggle />
+        </div>
+      </nav>
     </header>
-);
+  );
 }
