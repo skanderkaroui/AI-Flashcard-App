@@ -3,7 +3,7 @@ export default function Hero() {
     <section className="bg-secondary py-20">
       <div className="container mx-auto px-6 text-center">
         <div className="flex justify-center items-center mb-4">
-          <h1 className="text-4xl font-bold text-foreground mr-2">
+          <h1 className="font-bricolage text-4xl font-bold text-foreground mr-2">
             Own the Room with Trivia Flashcards
           </h1>
           <img
