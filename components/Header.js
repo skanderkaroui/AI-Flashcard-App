@@ -5,7 +5,14 @@ export default function Header() {
   return (
     <header className="bg-background shadow-md">
       <nav className="container mx-auto px-6 py-3 flex justify-between items-center">
-        <div className="text-2xl font-bold text-primary">TriviaCards</div>
+        <div className="text-2xl font-bold text-primary">
+          TriviaCards
+          <img
+            src="/images/grimacing-face.png"
+            alt="Grimacing Face"
+            className="inline-block h-7 mx-1"
+          />
+        </div>
         <div className="flex items-center space-x-4">
           <ul className="flex space-x-4">
             <li>
