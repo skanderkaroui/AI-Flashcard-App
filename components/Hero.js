@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Hero() {
   return (
     <section className="bg-secondary py-20">
@@ -17,9 +19,11 @@ export default function Hero() {
           Be the star of the party with flashcards designed to boost your trivia
           skills.
         </p>
-        <button className="bg-primary text-primary-foreground font-bold py-3 px-16 rounded-lg hover:bg-primary/90 transition duration-300">
-          Get Started
-        </button>
+        <Link href="/login">
+          <button className="bg-primary text-primary-foreground font-bold py-3 px-16 rounded-lg hover:bg-primary/90 transition duration-300">
+            Get Started
+          </button>
+        </Link>
       </div>
     </section>
   );
