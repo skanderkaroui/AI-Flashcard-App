@@ -1,3 +1,4 @@
+import { SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 export default function Hero() {
@@ -19,11 +20,11 @@ export default function Hero() {
           Be the star of the party with flashcards designed to boost your trivia
           skills.
         </p>
-        <Link href="/login">
+        <SignInButton mode="modal">
           <button className="bg-primary text-primary-foreground font-bold py-3 px-16 rounded-lg hover:bg-primary/90 transition duration-300">
             Get Started
           </button>
-        </Link>
+        </SignInButton>
       </div>
     </section>
   );
