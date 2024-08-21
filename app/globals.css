@@ -73,3 +73,7 @@
 .font-bricolage {
   font-family: "__Bricolage_Grotesque_e67227", sans-serif;
 }
+
+.btn-grad {
+  background: linear-gradient(90deg, #9888f4 0%, #715de3 100%);
+}
