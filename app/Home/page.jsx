@@ -21,7 +21,7 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <div className="flex justify-between ">
       <UserButton />
       <button onClick={handleSubmit}>Sign In with Firebase</button>
     </div>
