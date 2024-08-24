@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ModeToggle } from "@/components/ModeToggle";
+import { SignInButton } from "@clerk/nextjs";
 
 export default function Header() {
   return (
@@ -32,9 +33,7 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link href="" className="text-foreground hover:text-primary">
-                Login
-              </Link>
+              <SignInButton mode="modal">Login</SignInButton>
             </li>
           </ul>
           <ModeToggle />

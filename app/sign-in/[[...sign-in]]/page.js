@@ -14,7 +14,7 @@ export default function SignUpPage() {
       <Header />
       <main>
         <Button>
-          <SignIn />
+          <SignIn forceRedirectUrl={"/Home"} />
         </Button>
       </main>
     </div>
