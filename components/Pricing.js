@@ -1,13 +1,22 @@
+"use client";
+
+import { useState } from 'react';
+import getStripe from '../utils/get-stripe';
+
 export default function Pricing() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const plans = [
     {
       name: "Basic",
-      price: "$4.99",
+      price: "Free",
+      priceId: "prod_QiorrLLE19a7Py", // Replace with your actual Stripe Price ID
       features: ["Up to 1000 cards", "Basic analytics", "Web access"],
     },
     {
       name: "Pro",
       price: "$9.99",
+      priceId: "prod_QiosTnEJnkdHpt", // Replace with your actual Stripe Price ID
       features: [
         "Unlimited cards",
         "Advanced analytics",
@@ -18,6 +27,7 @@ export default function Pricing() {
     {
       name: "Team",
       price: "$19.99",
+      priceId: "price_1122334455", // Replace with your actual Stripe Price ID
       features: [
         "Everything in Pro",
         "Collaboration features",
@@ -26,6 +36,32 @@ export default function Pricing() {
       ],
     },
   ];
+
+  const handleSubscription = async (priceId) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/checkout_sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ priceId }),
+      });
+
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const { sessionId } = await response.json();
+      const stripe = await getStripe();
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <section id="pricing" className="py-20 bg-background">
@@ -72,8 +108,12 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-              <button className="w-full bg-primary text-primary-foreground font-bold py-2 px-4 rounded hover:bg-primary/90 transition duration-300">
-                Select Plan
+              <button
+                className="w-full bg-primary text-primary-foreground font-bold py-2 px-4 rounded hover:bg-primary/90 transition duration-300"
+                onClick={() => handleSubscription(plan.priceId)}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Processing...' : 'Select Plan'}
               </button>
             </div>
           ))}
