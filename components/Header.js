@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ModeToggle } from "@/components/ModeToggle";
-import { SignInButton } from "@clerk/nextjs";
+import { SignInButton, SignOutButton, SignedIn, SignedOut } from "@clerk/nextjs";
 
 export default function Header() {
   return (
@@ -33,7 +33,12 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <SignInButton mode="modal">Login</SignInButton>
+              <SignedIn>
+                <SignOutButton mode="modal">Logout</SignOutButton>
+              </SignedIn>
+              <SignedOut>
+                <SignInButton mode="modal">Login</SignInButton>
+              </SignedOut>
             </li>
           </ul>
           <ModeToggle />
