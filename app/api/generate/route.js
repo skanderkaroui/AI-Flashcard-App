@@ -10,11 +10,12 @@ const Systemprompt = `
   5. Write a list of keywords that are related to the topic.
   6. Write a list of references that people can use to learn more about the topic.
   
-  Return in the following JSON format:
+  Return in the following JSON schema:
   {
-    "flashcards": {
-        "front": str,
-        "back": str
+    "type": "object",
+    "properties": {
+        "front": { "type": "string" },
+        "back": { "type": "string" },
     }
   }
 `;
@@ -23,15 +24,17 @@ export async function POST(req) {
   const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_API);
   console.log(process.env.GOOGLE_API_KEY);
   // Get the model instance
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    generationConfig: { responseMimeType: "application/json" },
+  });
 
   console.log(req);
   // Generate content with the model
-  const completion = await model.generateContent(Systemprompt + req);
+  const result = await model.generateContent(Systemprompt + req);
 
   // Parse and return the result
-  const result = await completion.response.text();
-  const flashcard = JSON.parse(result);
+  console.log(result.response.text());
 
-  return NextResponse.json(flashcard.flashcards);
+  return JSON.parse(result.response.text());
 }

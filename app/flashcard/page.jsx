@@ -14,6 +14,7 @@ export default function Flashcard() {
   const handleGenerate = async () => {
     const response = await POST(data);
     setFlashcards([response]); // Assume the response is an array of flashcards
+    console.log(flashcards);
   };
 
   const handleAdd = (front, back) => {
