@@ -6,10 +6,12 @@ import { useState } from "react";
 import { POST } from "../api/generate/route";
 import { addFlashCard } from "../crud";
 import { db } from "@/firebase";
+import { auth } from "@/firebase";
 
 export default function Flashcard() {
   const [data, setData] = useState("");
   const [flashcards, setFlashcards] = useState([]);
+  const userId = auth.currentUser?.uid;
 
   const handleGenerate = async () => {
     const response = await POST(data);
@@ -17,8 +19,8 @@ export default function Flashcard() {
     console.log(flashcards);
   };
 
-  const handleAdd = (front, back) => {
-    addFlashCard(db, "flashcard", { front, back });
+  const handleAdd = () => {
+    addFlashCard(db, userId, data, flashcards[0]);
   };
 
   return (
@@ -46,6 +48,9 @@ export default function Flashcard() {
           </div>
         ))}
       </div>
+      <Button onClick={handleAdd} sx={{ bgcolor: "black" }}>
+        Save
+      </Button>
     </div>
   );
 }
