@@ -3,9 +3,10 @@
 import { UserButton, useUser } from "@clerk/nextjs"; // Import Clerk-related modules
 import { auth } from "@/firebase"; // Import Firebase auth
 import { signInWithCustomToken } from "firebase/auth"; // Import Firebase auth
-import { db } from "@/firebase";
 import { getDoc, doc, collection, addDoc } from "firebase/firestore";
 import { useAuth } from "@clerk/nextjs";
+
+import Link from "next/link";
 
 export default function Home() {
   //   const { isSignedIn, user } = useUser();
@@ -21,9 +22,14 @@ export default function Home() {
   };
 
   return (
-    <div className="flex justify-between ">
-      <UserButton />
-      <button onClick={handleSubmit}>Sign In with Firebase</button>
-    </div>
+    <>
+      <div className="">
+        <UserButton />
+        <button onClick={handleSubmit}>Sign In with Firebase</button>
+      </div>
+      <Link href="/flashcard">
+        <button className="h-24 w-28 border border-black">Add FlashCard</button>
+      </Link>
+    </>
   );
 }

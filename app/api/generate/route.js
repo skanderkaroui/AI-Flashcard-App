@@ -20,16 +20,18 @@ const Systemprompt = `
 `;
 
 export async function POST(req) {
-  const genAI = new GoogleGenerativeAI({ apiKey: process.env.GOOGLE_API_KEY });
-  const model = genAI.getGenerativeModel("gemini-1.5-flash");
-  const requestData = await req.text();
+  const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_API);
+  console.log(process.env.GOOGLE_API_KEY);
+  // Get the model instance
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  const completion = await model.generateContent({
-    prompt: Systemprompt + requestData,
-    maxTokens: 300,
-  });
+  console.log(req);
+  // Generate content with the model
+  const completion = await model.generateContent(Systemprompt + req);
 
-  const flashcard = JSON.parse(result.response.text());
+  // Parse and return the result
+  const result = await completion.response.text();
+  const flashcard = JSON.parse(result);
 
   return NextResponse.json(flashcard.flashcards);
 }
