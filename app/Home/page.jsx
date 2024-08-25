@@ -5,7 +5,9 @@ import { auth } from "@/firebase"; // Import Firebase auth
 import { signInWithCustomToken } from "firebase/auth"; // Import Firebase auth
 import { getDoc, doc, collection, addDoc } from "firebase/firestore";
 import { useAuth } from "@clerk/nextjs";
-
+import { db } from "@/firebase";
+import { getSubCollectionNames } from "../crud";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function Home() {
@@ -21,6 +23,16 @@ export default function Home() {
     console.log("User:", userCredentials.user);
   };
 
+  const [subcollections, setSubcollections] = useState([]);
+
+  useEffect(() => {
+    const fetchSubCollections = async () => {
+      const names = await getSubCollectionNames(db, userId);
+      setSubcollections(names);
+    };
+    fetchSubCollections();
+  }, []);
+
   return (
     <>
       <div className="">
@@ -30,6 +42,16 @@ export default function Home() {
       <Link href="/flashcard">
         <button className="h-24 w-28 border border-black">Add FlashCard</button>
       </Link>
+      <h1>Flashcard Subcollections</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {subcollections.map((name) => (
+          <div key={name} className="card">
+            <Link href={`/flashcard/${name}`}>
+              <a className="card-content">{name}</a>
+            </Link>
+          </div>
+        ))}
+      </div>
     </>
   );
 }
