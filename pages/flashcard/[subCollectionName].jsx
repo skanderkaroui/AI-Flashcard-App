@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getSubCollectionData } from "../../lib/firestore"; // Import your Firestore helper
+import { getSubCollectionData } from "@/app/crud";
+// import {getSubCollectionData} from "../../lib/firestore"
 import { useRouter } from "next/router";
 
 const SubCollectionPage = () => {
