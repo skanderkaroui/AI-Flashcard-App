@@ -3,7 +3,6 @@ import { db } from "../firebase";
 import { query, where, getDocs } from "firebase/firestore";
 import { doc, updateDoc } from "firebase/firestore";
 import { deleteDoc } from "firebase/firestore";
-import { listCollections } from "firebase/firestore";
 
 export const addFlashCard = async (db, userId, subCollectionName, itemData) => {
   try {
@@ -28,18 +27,20 @@ export const addFlashCard = async (db, userId, subCollectionName, itemData) => {
 
 export const getSubCollectionNames = async (db, userId) => {
   try {
-    // Create a reference to the user's document in the flashcard collection
+    if (!userId) {
+      throw new Error("User ID is required");
+    }
     const userDocRef = doc(db, "flashcard", userId);
 
-    // List all subcollections under the user's document
-    const subcollections = await listCollections(userDocRef);
+    // Get all documents in the user's flashcard collection
+    const snapshot = await getDocs(collection(userDocRef, 'subcollections'));
 
     // Extract and return the names of the subcollections
-    const subcollectionNames = subcollections.map((col) => col.id);
+    const subcollectionNames = snapshot.docs.map((doc) => doc.id);
     console.log("Subcollection names:", subcollectionNames);
     return subcollectionNames;
   } catch (e) {
-    console.error("Error fetching subcollection names:", e);
+    console.error("Error fetching subcollection names:", e.message, e.code);
     throw e;
   }
 };
