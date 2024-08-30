@@ -6,13 +6,16 @@ import { signInWithCustomToken } from "firebase/auth"; // Import Firebase auth
 import { getDoc, doc, collection, addDoc } from "firebase/firestore";
 import { useAuth } from "@clerk/nextjs";
 import { db } from "@/firebase";
-import { getSubCollectionNames } from "../crud";
+import { getSubCollectionData } from "../crud";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function Home() {
   //   const { isSignedIn, user } = useUser();
   const { getToken, userId } = useAuth();
+  const [flashcardsData, setFlashcardsData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async () => {
     const token = await getToken({ template: "integration_firebase" });
@@ -26,12 +29,22 @@ export default function Home() {
   const [subcollections, setSubcollections] = useState([]);
 
   useEffect(() => {
-    const fetchSubCollections = async () => {
-      const names = await getSubCollectionNames(db, userId);
-      setSubcollections(names);
+    const fetchData = async () => {
+      try {
+        const userId = "yourUserId"; // Replace with the user's ID or fetch it dynamically
+        const data = await getSubCollectionData(db, userId); // Fetch all collections' data
+        setFlashcardsData(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchSubCollections();
-  }, []);
+    fetchData();
+  }, []); // Empty dependency array to ensure it runs once after component mounts
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <>
@@ -42,15 +55,14 @@ export default function Home() {
       <Link href="/flashcard">
         <button className="h-24 w-28 border border-black">Add FlashCard</button>
       </Link>
-      <h1>Flashcard Subcollections</h1>
+      <h1>Flashcard Data</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {subcollections.map((name) => (
-          <div key={name} className="card">
-            <Link href={`/flashcard/${name}`}>
-              <a className="card-content">{name}</a>
-            </Link>
-          </div>
-        ))}
+        {flashcardsData &&
+          flashcardsData.map((flashcard) => (
+            <div key={flashcard.id} className="card">
+              <h2>{flashcard.title}</h2> {/* Example field from flashcard */}
+            </div>
+          ))}
       </div>
     </>
   );

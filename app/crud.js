@@ -1,7 +1,6 @@
 import { collection, addDoc } from "firebase/firestore";
-import { db } from "../firebase";
 import { query, where, getDocs } from "firebase/firestore";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { deleteDoc } from "firebase/firestore";
 
 export const addFlashCard = async (db, userId, subCollectionName, itemData) => {
@@ -16,6 +15,7 @@ export const addFlashCard = async (db, userId, subCollectionName, itemData) => {
     const docRef = await addDoc(dynamicCollectionRef, {
       front: itemData.front,
       back: itemData.back,
+      title: subCollectionName,
     });
 
     console.log("flashcard added with ID: ", docRef.id);
@@ -25,47 +25,35 @@ export const addFlashCard = async (db, userId, subCollectionName, itemData) => {
   }
 };
 
-export const getSubCollectionNames = async (db, userId) => {
+export const getSubCollectionData = async (db, userId) => {
   try {
-    if (!userId) {
-      throw new Error("User ID is required");
+    // Create a reference to the user's document
+    const userDocRef = doc(db, "flashcard", userId);
+
+    // Fetch all collections under the user's document
+    const collectionsSnapshot = await getCollections(userDocRef);
+
+    const allData = {};
+
+    // Iterate through each collection and fetch its documents
+    for (const subCollection of collectionsSnapshot) {
+      const subCollectionRef = collection(userDocRef, subCollection.id);
+      const snapshot = await getDocs(subCollectionRef);
+
+      // Extract the data from the snapshot
+      const subCollectionData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Store the data in an object, using the collection name as the key
+      allData[subCollection.id] = subCollectionData;
     }
-    const userDocRef = doc(db, "flashcard", userId);
 
-    // Get all documents in the user's flashcard collection
-    const snapshot = await getDocs(collection(userDocRef, 'subcollections'));
-
-    // Extract and return the names of the subcollections
-    const subcollectionNames = snapshot.docs.map((doc) => doc.id);
-    console.log("Subcollection names:", subcollectionNames);
-    return subcollectionNames;
+    console.log("All collections data:", allData);
+    return allData;
   } catch (e) {
-    console.error("Error fetching subcollection names:", e.message, e.code);
-    throw e;
-  }
-};
-
-export const getSubCollectionData = async (db, userId, subCollectionName) => {
-  try {
-    // Create a reference to the user's document in the flashcard collection
-    const userDocRef = doc(db, "flashcard", userId);
-
-    // Create a reference to the specific sub-collection
-    const subCollectionRef = collection(userDocRef, subCollectionName);
-
-    // Fetch all the documents in the subcollection
-    const snapshot = await getDocs(subCollectionRef);
-
-    // Extract the data from the snapshot
-    const flashcards = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    console.log("Flashcards data:", flashcards);
-    return flashcards;
-  } catch (e) {
-    console.error("Error fetching flashcards data:", e);
+    console.error("Error fetching collections data:", e);
     throw e;
   }
 };

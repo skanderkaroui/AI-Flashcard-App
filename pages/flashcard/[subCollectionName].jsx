@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getSubCollectionData } from "@/app/crud";
 // import {getSubCollectionData} from "../../lib/firestore"
 import { useRouter } from "next/router";
-
+import { db } from "../../firebase";
 const SubCollectionPage = () => {
   const router = useRouter();
   const { subCollectionName } = router.query; // Get the dynamic subCollectionName from the route
@@ -11,7 +11,6 @@ const SubCollectionPage = () => {
 
   useEffect(() => {
     const fetchFlashcards = async () => {
-      const db = yourFirebaseDbInstance; // Replace with actual Firestore instance
       if (subCollectionName) {
         const data = await getSubCollectionData(db, userId, subCollectionName);
         setFlashcards(data);
