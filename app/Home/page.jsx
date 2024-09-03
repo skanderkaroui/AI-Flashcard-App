@@ -13,7 +13,7 @@ import Header from "@/components/Header";
 export default function Home() {
   //   const { isSignedIn, user } = useUser();
   const { getToken, userId } = useAuth();
-  const [flashcardsData, setFlashcardsData] = useState(null);
+  const [flashcardsData, setFlashcardsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -33,8 +33,8 @@ export default function Home() {
       try {
         const collectionId = localStorage.getItem('userID');
         const data = await getAllData(collectionId);
-        console.log("data", data)
-        // setFlashcardsData(data);
+        setFlashcardsData(data)
+        console.log(data)
       } catch (error) {
         setError(error.message);
       } finally {
@@ -48,19 +48,28 @@ export default function Home() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <>
+    <div style={{ width: "100%" }}>
       <Header />
-      <Link href="/flashcard">
-        <button className="h-24 w-28 border border-black">Add FlashCard</button>
+      <Link style={{ display: "flex", justifyContent: "center", margin: '20px 0' }} href="/flashcard">
+        <button
+
+          className="bg-primary text-primary-foreground font-bold py-3 px-16 rounded-lg hover:bg-primary/90 transition duration-300"
+        >
+          Add FlashCard
+        </button>
+
       </Link>
-      <h1>Flashcard Data</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {flashcardsData && flashcardsData?.map((flashcard) => (
-            <div key={flashcard.id} className="card">
-              <h2>{flashcard.title}</h2> {/* Example field from flashcard */}
+      <h1 style={{textAlign: "center", marginTop: "30px", fontSize: "19px", font: "bold"}}>Flashcard Data</h1>
+      <div style={{ display: "flex", justifyContent: "center", flexWrap: "true" }} className="flashcard-container">
+        {flashcardsData && Object.keys(flashcardsData).length && Object.keys(flashcardsData)?.map((card, index) => (
+          <div style={{ margin: "20px 20px",  minWidth: "300px" }} key={index} className="flashcard">
+            <div className="flashcard-inner">
+              <div style={{ padding: "0 20px" }} className="flashcard-front">{flashcardsData[card].front}</div>
+              <div style={{ padding: "0 20px" }} className="flashcard-back">{flashcardsData[card].back}</div>
             </div>
-          ))}
+          </div>
+        ))}
       </div>
-    </>
+    </div>
   );
 }

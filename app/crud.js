@@ -26,7 +26,6 @@ export const getAllSubCollectionData = async (documentId) => {
     const subCollectionNames = await getSubCollectionNames(db, "flashcard", documentId);
     const allData = {};
 
-    console.log("subCollectionNames", subCollectionNames)
 
     for (const subCollectionName of subCollectionNames) {
       const subCollectionRef = collection(db, "flashcard", documentId, subCollectionName);
