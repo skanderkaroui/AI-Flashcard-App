@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "flashcardsaas-49abf"
-  }
+    "default": "flashcardsaas-49abf",
+    "production": "flashcardsaas-9dec8"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }

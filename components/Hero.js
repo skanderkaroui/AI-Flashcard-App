@@ -39,7 +39,7 @@ export default function Hero() {
         <SignedOut>
           <button
             className="bg-primary text-primary-foreground font-bold py-3 px-16 rounded-lg hover:bg-primary/90 transition duration-300"
-            onClick={() => router.push("/sign-in")} // Navigate to sign-in if the user is not logged in
+            onClick={() => router.push("/login")} // Navigate to sign-in if the user is not logged in
           >
             Get Started
           </button>

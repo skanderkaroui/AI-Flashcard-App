@@ -1,19 +1,37 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+admin.initializeApp();
 
-const {onRequest} = require("firebase-functions/v2/https");
-const logger = require("firebase-functions/logger");
+exports.listSubCollections = functions.https.onCall(async (data, context) => {
+  const {collectionName, documentId} = data;
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+  if (!collectionName || !documentId) {
+    throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Collection name and document ID are required.",
+    );
+  }
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+  try {
+    const docRef = admin.firestore().collection(collectionName).doc(documentId);
+    const subCollections = await docRef.listCollections();
+    const subCollectionNames = subCollections.map((col) => col.id);
+
+    const allData = {};
+    for (const subCollectionName of subCollectionNames) {
+      const snapshot = await docRef.collection(subCollectionName).get();
+      allData[subCollectionName] = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    }
+
+    return {subCollectionNames, allData};
+  } catch (error) {
+    console.error("Error listing sub-collections:", error);
+    throw new functions.https.HttpsError(
+        "internal",
+        "Failed to list sub-collections.",
+    );
+  }
+});

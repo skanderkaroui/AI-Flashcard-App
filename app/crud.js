@@ -1,59 +1,66 @@
-import { collection, addDoc } from "firebase/firestore";
-import { query, where, getDocs } from "firebase/firestore";
-import { doc, updateDoc, getDoc } from "firebase/firestore";
-import { deleteDoc } from "firebase/firestore";
+import { db } from "@/firebase";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 
-export const addFlashCard = async (db, userId, subCollectionName, itemData) => {
+// Function to get the names of sub-collections (assuming you store them somewhere)
+// Example implementation assuming you store sub-collection names in a document
+export const getSubCollectionNames = async (db, collectionName, documentId) => {
   try {
-    // Create a reference to the user's document in the flashcard collection
-    const userDocRef = doc(db, "flashcard", userId);
-
-    // Create a reference to the dynamic sub-collection inside the user's document
-    const dynamicCollectionRef = collection(userDocRef, subCollectionName);
-
-    // Add a new document to the dynamic sub-collection with the provided item data
-    const docRef = await addDoc(dynamicCollectionRef, {
-      front: itemData.front,
-      back: itemData.back,
-      title: subCollectionName,
-    });
-
-    console.log("flashcard added with ID: ", docRef.id);
-    return docRef.id;
+    const docRef = doc(db, collectionName, documentId);
+    const subCollectionsDocRef = doc(db, collectionName, documentId, "subCollections", "info");
+    const docSnap = await getDoc(subCollectionsDocRef);
+    if (docSnap.exists()) {
+      return docSnap.data().subCollections || []; // Array of sub-collection names
+    } else {
+      console.error("No sub-collections document found!");
+      return [];
+    }
   } catch (e) {
-    console.error("Error adding flashcard: ", e);
+    console.error("Error fetching sub-collection names:", e);
+    throw e;
   }
 };
 
-export const getSubCollectionData = async (db, userId) => {
+// Function to get all documents from all sub-collections
+export const getAllSubCollectionData = async (documentId) => {
   try {
-    // Create a reference to the user's document
-    const userDocRef = doc(db, "flashcard", userId);
-
-    // Fetch all collections under the user's document
-    const collectionsSnapshot = await getCollections(userDocRef);
-
+    const subCollectionNames = await getSubCollectionNames(db, "flashcard", documentId);
     const allData = {};
 
-    // Iterate through each collection and fetch its documents
-    for (const subCollection of collectionsSnapshot) {
-      const subCollectionRef = collection(userDocRef, subCollection.id);
+    console.log("subCollectionNames", subCollectionNames)
+
+    for (const subCollectionName of subCollectionNames) {
+      const subCollectionRef = collection(db, "flashcard", documentId, subCollectionName);
       const snapshot = await getDocs(subCollectionRef);
 
-      // Extract the data from the snapshot
       const subCollectionData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      // Store the data in an object, using the collection name as the key
-      allData[subCollection.id] = subCollectionData;
+      allData[subCollectionName] = subCollectionData;
     }
 
-    console.log("All collections data:", allData);
+    console.log("All sub-collections data:", allData);
     return allData;
   } catch (e) {
-    console.error("Error fetching collections data:", e);
+    console.error("Error fetching all sub-collections data:", e);
     throw e;
+  }
+};
+
+export const getAllData = async (userId) => {
+  try{
+    const userDocRef = doc(db, "flashcard", userId);
+    const docSnap = await getDoc(userDocRef);
+    let data = {}
+
+    if (docSnap.exists()) {
+      data = docSnap.data();
+    } else {
+      console.log("No such document!");
+    }
+    return data;
+  }catch(err){
+    console.error(err)
   }
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getSubCollectionData } from "@/app/crud";
-// import {getSubCollectionData} from "../../lib/firestore"
+import { getAllSubCollectionData } from "@/app/crud";
+// import {getAllSubCollectionData} from "../../lib/firestore"
 import { useRouter } from "next/router";
 import { db } from "../../firebase";
 const SubCollectionPage = () => {
@@ -12,7 +12,7 @@ const SubCollectionPage = () => {
   useEffect(() => {
     const fetchFlashcards = async () => {
       if (subCollectionName) {
-        const data = await getSubCollectionData(db, userId, subCollectionName);
+        const data = await getAllSubCollectionData(db, userId, subCollectionName);
         setFlashcards(data);
       }
     };

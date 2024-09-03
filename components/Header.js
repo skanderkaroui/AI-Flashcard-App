@@ -1,8 +1,52 @@
+'use client'
 import Link from "next/link";
 import { ModeToggle } from "@/components/ModeToggle";
-import { SignInButton, SignOutButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { useEffect } from "react";
+import { SignInButton, SignOutButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import { db } from "@/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function Header() {
+  const { user } = useUser();
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("userID", user.id);
+      createOrUpdateUserDocument(user.id);
+    }
+  }, [user]);
+
+  const createOrUpdateUserDocument = async (userId) => {
+    try {
+      const userDocRef = doc(db, "flashcard", userId);
+      const docSnap = await getDoc(userDocRef);
+
+      if (!docSnap.exists()) {
+        // Document does not exist, so create it
+        // await setDoc(userDocRef, {
+        //   exampleField: {
+        //     name: "Haider",
+        //     score: 0,
+        //     attempts: 0,
+        //     flashcards: [],
+        //     subCollections: [],
+        //     progress: {},
+        //   },
+        // });
+        console.log("Document created successfully!");
+      } else {
+        console.log("Document already exists!");
+      }
+    } catch (error) {
+      console.error("Error creating or updating document: ", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!user) {
+      localStorage.removeItem("userID");
+    }
+  }, [user]);
+
   return (
     <header className="bg-background shadow-md">
       <nav className="container mx-auto px-6 py-3 flex justify-between items-center">
@@ -34,7 +78,8 @@ export default function Header() {
             </li>
             <li>
               <SignedIn>
-                <SignOutButton mode="modal">Logout</SignOutButton>
+                <SignOutButton mode="modal">
+                  Logout</SignOutButton>
               </SignedIn>
               <SignedOut>
                 <SignInButton mode="modal">Login</SignInButton>
