@@ -34,6 +34,10 @@ export default function Pricing() {
       ],
     },
     {
+      link: 
+         process.env.NODE_ENV === "development"
+         ? "https://buy.stripe.com/test_aEU5mp1uK6A9g4U146"
+         : "",
       name: "Team",
       price: "$19.99",
       priceId: "price_1122334455", // Replace with your actual Stripe Price ID
