@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import getStripe from '../utils/get-stripe';
+import { useUser } from "@clerk/nextjs";
 
 export default function Pricing() {
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState(false);
 
   const plans = [
@@ -44,24 +46,33 @@ export default function Pricing() {
     },
   ];
 
-  const handleSubscription = async (priceId) => {
+  const handleSubscription = async (plan) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/checkout_sessions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ priceId }),
-      });
+      if (plan.link) {
+        // If a link is provided, redirect to it with the user's email
+        const userEmail = user?.primaryEmailAddress?.emailAddress || '';
+        const encodedEmail = encodeURIComponent(userEmail);
+        const redirectUrl = `${plan.link}?prefilled_email=${encodedEmail}`;
+        window.location.href = redirectUrl;
+      } else {
+        // If no link, fall back to the previous behavior
+        const response = await fetch('/checkout_sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ priceId: plan.priceId }),
+        });
 
-      if (!response.ok) throw new Error('Network response was not ok');
+        if (!response.ok) throw new Error('Network response was not ok');
 
-      const { sessionId } = await response.json();
-      const stripe = await getStripe();
-      const { error } = await stripe.redirectToCheckout({ sessionId });
+        const { sessionId } = await response.json();
+        const stripe = await getStripe();
+        const { error } = await stripe.redirectToCheckout({ sessionId });
 
-      if (error) throw error;
+        if (error) throw error;
+      }
     } catch (error) {
       console.error('Error:', error);
       alert('An error occurred. Please try again.');
@@ -117,7 +128,7 @@ export default function Pricing() {
               </ul>
               <button
                 className="w-full bg-primary text-primary-foreground font-bold py-2 px-4 rounded hover:bg-primary/90 transition duration-300"
-                onClick={() => handleSubscription(plan.priceId)}
+                onClick={() => handleSubscription(plan)}
                 disabled={isLoading}
               >
                 {isLoading ? 'Processing...' : 'Select Plan'}
