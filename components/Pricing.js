@@ -7,13 +7,20 @@ export default function Pricing() {
   const [isLoading, setIsLoading] = useState(false);
 
   const plans = [
-    {
+    { link:
+      process.env.NODE_ENV === "development"
+      ? "https://buy.stripe.com/test_3csdSV5L06A93i8289"
+      : "",
       name: "Basic",
       price: "Free",
       priceId: "prod_QiorrLLE19a7Py", // Replace with your actual Stripe Price ID
       features: ["Up to 1000 cards", "Basic analytics", "Web access"],
     },
     {
+      link: 
+         process.env.NODE_ENV === "development"
+         ? "https://buy.stripe.com/test_dR6025flAcYx6uk6oo"
+         : "",
       name: "Pro",
       price: "$9.99",
       priceId: "prod_QiosTnEJnkdHpt", // Replace with your actual Stripe Price ID
